@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>巡邏點簽到 - 1F左側逃生梯</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>巡邏點簽到 - 1F左側逃生梯</h2>
+        <div id="locationStatus" class="status">正在獲取位置...</div>
+        <button onclick="getLocationAndSubmit()">提交巡邏記錄</button>
+    </div>
+
+    <script>
+        function getLocationAndSubmit() {
+            const locationStatus = document.getElementById('locationStatus');
+            const location = "1F左側逃生梯"; // 固定位置名稱
+            
+            // 請將此處替換為您的 Google Apps Script 網頁應用程式 URL
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz5Da5cJK0IdqotciuON1Ha_Alc3V-8oo8JAs_OH_E-chTcHCoShnR4ix0U2fHquu9hnw/exec';
+
+            if (!navigator.geolocation) {
+                locationStatus.textContent = '您的瀏覽器不支援地理位置功能';
+                locationStatus.className = 'status error';
+                return;
+            }
+
+            locationStatus.textContent = '正在獲取位置...';
+            locationStatus.className = 'status';
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const gpsString = `${lat},${lon}`;
+
+                    locationStatus.textContent = '正在提交資料...';
+
+                    try {
+                        const response = await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                location: location,
+                                gps: gpsString
+                            })
+                        });
+
+                        locationStatus.textContent = '提交成功！' + new Date().toLocaleString('zh-TW');
+                        locationStatus.className = 'status success';
+                    } catch (error) {
+                        locationStatus.textContent = '提交失敗：' + error.message;
+                        locationStatus.className = 'status error';
+                    }
+                },
+                (error) => {
+                    let errorMessage;
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = "使用者拒絕提供地理位置";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = "位置資訊無法取得";
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = "取得位置超時";
+                            break;
+                        default:
+                            errorMessage = "發生未知錯誤";
+                            break;
+                    }
+                    locationStatus.textContent = errorMessage;
+                    locationStatus.className = 'status error';
+                }
+            );
+        }
+    </script>
+</body>
+</html>
