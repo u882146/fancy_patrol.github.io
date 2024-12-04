@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>巡邏點簽到 - 1F左側逃生梯</title>
+    <title>巡邏點簽到 - 1F大廳</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,7 +48,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>巡邏點簽到 - 1F左側逃生梯</h2>
+        <h2>巡邏點簽到 - 1F大廳</h2>
         <div id="locationStatus" class="status">正在獲取位置...</div>
         <button onclick="getLocationAndSubmit()">提交巡邏記錄</button>
     </div>
@@ -56,7 +56,7 @@
     <script>
         function getLocationAndSubmit() {
             const locationStatus = document.getElementById('locationStatus');
-            const location = "1F左側逃生梯"; // 固定位置名稱
+            const location = "1F大廳"; // 固定位置名稱
             
             // 請將此處替換為您的 Google Apps Script 網頁應用程式 URL
             const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz5Da5cJK0IdqotciuON1Ha_Alc3V-8oo8JAs_OH_E-chTcHCoShnR4ix0U2fHquu9hnw/exec';
