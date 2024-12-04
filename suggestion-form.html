@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>意見信箱</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>意見信箱</h2>
+        <div class="form-group">
+            <label for="location">戶別 (例：3F-1)：</label>
+            <input type="text" id="location" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email：</label>
+            <input type="email" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="suggestion">意見內容：</label>
+            <textarea id="suggestion" rows="4" required></textarea>
+        </div>
+        <div id="submitStatus" class="status">填寫完成後請點擊提交</div>
+        <button onclick="submitSuggestion()">提交意見</button>
+    </div>
+
+    <script>
+        async function submitSuggestion() {
+            const submitStatus = document.getElementById('submitStatus');
+            const location = document.getElementById('location').value;
+            const email = document.getElementById('email').value;
+            const suggestion = document.getElementById('suggestion').value;
+
+            if (!location || !email || !suggestion) {
+                submitStatus.textContent = '請填寫所有欄位';
+                submitStatus.className = 'status error';
+                return;
+            }
+
+            // 請將此處替換為您的新 Google Apps Script 網頁應用程式 URL
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxa9eWiIxLOebFu2Y7sn_CQuNBxp5dPdXwDyA1DiXlPElj9UgGwEpzwWzO66oGxMcR_/exec';
+
+            submitStatus.textContent = '正在提交...';
+            submitStatus.className = 'status';
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        location: location,
+                        email: email,
+                        suggestion: suggestion
+                    })
+                });
+
+                submitStatus.textContent = '提交成功！' + new Date().toLocaleString('zh-TW');
+                submitStatus.className = 'status success';
+                
+                // 清空表單
+                document.getElementById('location').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('suggestion').value = '';
+            } catch (error) {
+                submitStatus.textContent = '提交失敗：' + error.message;
+                submitStatus.className = 'status error';
+            }
+        }
+    </script>
+</body>
+</html>
